@@ -77,6 +77,26 @@ public class Singleton{
     }
 }
 ```
+#### 利用反射破坏单例
+通过反射中的```setAccessible(true)```覆盖Java中的访问控制，进而调用私有的构造函数。
+
+**抵御反射破坏**
+
+```
+public class Singleton{
+    private static Singleton singleton = new Singleton();
+
+    private Singleton{
+        if (singleton != NULL){
+            throw new RuntimeException("单例构造器禁止通过反射调用");
+        }
+    }
+    public static Singleton getInstance(){
+        ...
+        return singleton;
+    }
+}
+```
 ### <center>简单工厂模式
 
 #### UML类图
@@ -128,6 +148,8 @@ public class SimpleFactory{
     }
 }
 ```
+
+
 ### <center>工厂模式
 
 #### UML类图
@@ -332,3 +354,128 @@ public class Client{
 提供一种方法顺序访问一个聚合对象中各个元素, 而又无须暴露该对象的内部表示。
 #### UML类图
 ![迭代器](./figure/5.png)
+
+### <center>数据访问对象模式
+数据访问对象模式的参与者：
+- 数据访问对象接口：定义了在一个模型对象上要执行的标准操作。
+- 数据访问对象实体类：实现接口，负责从数据源获取数据。
+- 模型对象/数值对象：简单的普通对象，包含了get/set方法来存储通过使用DAO类检索到的数据。
+
+优点：隔离数据层
+缺点：代码量增加
+
+#### UML类图
+![DAO](./figure/6.png)
+
+#### 代码实现
+**Step 1:创建数值对象**
+```
+public class Student{
+    private String name;
+    private int rollNo;
+
+    Student(String name, int rollNo){
+        this.name = name;
+        this.rollNo = rollNo;
+    }
+    public String getName(){
+        return name;
+    }
+    public int getRollNo(){
+        return rollNo;
+    }
+    public String setName(String name){
+        this.name = name;
+    }
+    public int setRollNo(int rollNo){
+        this.rollNo = rollNo;
+    }
+}
+```
+**Step 2:创建数据访问对象接口**
+```
+public interface StudentDao{
+    List<Student> getAllStudents();
+    Student getStudent(int rollNo);
+    void updateStudent(Student student);
+    void deleteStudent(Student student);
+}
+```
+**Step 3:创建数据访问对象实体类**
+略
+
+### MVC模式（模型视图控制器模式）
+每个组件的三个特征：内容/外观/行为
+
+### 模板方法模式
+主要包含：
+- AbstractClass抽象类：给出顶层逻辑的骨架。
+- ConcreteClass具体类：实现父类定义的一个或多个抽象方法。
+
+一个抽象类可以有任意多个具体子类，每一个抽象类都可以给出抽象方法的不同实现。
+
+### 观察者模式
+观察者模式(Observer Pattern)：定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式是一种对象行为型模式。
+- 抽象目标：把所有对观察者对象的引用保存在一个集合中，每个抽象目标都可以有任意数量的观查者。
+- 抽象观察者：为所有具体的观察者定义一个接口，在得到目标的通知时更新自己。
+- 具体目标：在具体主题内部状态改变时，给所有登记过的观察者发出通知。具体主题角色通常用一个子类实现。
+- 该角色实现抽象观察者角色所要求的更新接口，以便使本身的状态与主题的状态相协调。通常用一个子类实现。如果需要，具体观察者角色可以保存一个指向具体主题角色的引用。
+
+#### UML类图
+![DAO](./figure/7.png)
+
+#### 代码实现
+```
+// 抽象目标
+public abstract class MySubject{
+    protected ArrayList observers = new ArrayList();
+    public void attach(MyObserver observer){
+        observers.add(observer);
+    }
+    public void detach(MyObserver observer){
+        observers.remove(observer);
+    }
+    public abstract void cry();
+}
+```
+```
+public class Cat extends MySubject{
+    public void cry(){
+        System.out.println("mao jiao!");
+        for (Object obs:observers){
+            ((MyObservers)obs).response();
+        }
+    }
+}
+```
+```
+\\ 观察者接口
+public interface MyObservers{
+    void response();
+}
+```
+```
+public class Dog implements MyObserver{
+   public void response(){
+      System.out.println("狗跟着叫！");
+   }  
+}
+```
+```
+public class Mouse implements MyObserver{
+   public void response(){
+      System.out.println("run！");
+   }  
+}
+```
+观察者模式优点：
+- 可以实现表示层和数据逻辑层的分离
+- 在观察目标和观察者之间建立一个抽象的耦合
+- 支持广播通信，简化了一对多系统设计的难度
+- 符合开闭原则，增加新的具体观察者无须修改原有系统代码，在具体观察者与观察目标之间不存在关联关系的情况下，增加新的观察目标也很方便。
+
+观察者模式缺点：
+- 将所有的观察者都通知到会花费很多时间
+- 如果存在循环依赖时可能导致系统崩溃
+- 没有相应的机制让观察者知道所观察的目标对象是怎么发生变化的，而只是知道观察目标发生了变化
+
