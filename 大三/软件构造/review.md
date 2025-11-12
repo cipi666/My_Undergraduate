@@ -197,8 +197,8 @@ public class AudiFactory implements CarFactory{
 ```
 public class FactoryTest{
     public static void main(String[] args){
-        BMWFactory = new BMWFactory();
-        Car mayCar = CarFactory.buildACar();
+        BMWFactory carfactory = new BMWFactory();
+        Car mayCar = carFactory.buildACar();
         mayCar.showTheBrand();
     }
 }
