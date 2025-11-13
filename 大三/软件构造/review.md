@@ -1,5 +1,7 @@
 # <center>软件构造复习
 
+## <center>重要语法
+
 ## <center>设计模式
 
 ### 设计模式的分类
@@ -479,4 +481,3 @@ public class Mouse implements MyObserver{
 - 如果存在循环依赖时可能导致系统崩溃
 - 没有相应的机制让观察者知道所观察的目标对象是怎么发生变化的，而只是知道观察目标发生了变化
 
-## <center>重要语法
