@@ -1,6 +1,6 @@
 # <center>软件构造复习大纲
 
-## <center>重要语法
+## <center>Java中的机制
 
 ### Java数据类型
 1. 基本数据类型（数值型，字符型，布尔型） $\rightarrow$ 变量中直接存储的是数据本身的值。（栈内存）
@@ -27,6 +27,10 @@ print和println的参数完全一样，不同之处在于println输出后换行�
 
 ### Java异常机制
 异常指不期而至的各种状况，如：文件找不到、网络连接失败、非法参数等。异常是一个事件，它发生在程序运行期间，干扰了正常的指令流程。Java通过API中Throwable类的众多子类描述各种不同的异常。
+
+三种类型的异常：**检查性异常，运行时异常，错误。** 
+其中，检查性异常和运行时异常的核心区别就在于编译时是否会受到编译器的强制检查
+![异常](./figure/8.png)
 
 #### 问答题考点：throw和throws的用法
 ```
@@ -118,7 +122,224 @@ public class Person {
   - ​存在前提: ​任何对象都存在  V.S.  必须存在继承关系
   - 主要用途：解决成员与局部变量同名冲突  V.S. 调用父类构造器
 
+### static修饰符
+含义：表明该属性、方法是**属于类**的，称为**静态属性**或**静态方法**。
+- 静态成员属于类所有，不属于某一具体对象私有；
+- 静态成员随类加载时被静态地分配内存空间、方法的入口地址。
+
+例：
+```
+public class Person { 
+    private String name; 
+    private int age; 
+    static String city = “深圳"; 
+    public Person(String name, int age) { 
+        this.name = name; 
+        this.age = age; 
+    } 
+} 
+// 调用
+Person.city; //类名.属性
+```
+用static将city属性设置成一个公共属性。由于全局属性拥有可以通过类名称直接访问的特点，所以这种属性又称为类属性。
+
+注意:
+- 使用static声明的方法，不能访问非static的操作（属性或方法）
+- 非static声明的方法，可以访问static声明的属性或方法
+
+原因:
+- 如果一个类中的属性和方法都是非static类型的，一定要有实例化对象才可以调用
+- static声明的属性或方法可以通过类名访问，可以在没有实例化对象的情况下调用
+
+**静态属性被所有的对象所共享，在内存中只有一个副本，它当且仅当在类初次加载时会被初始化，非静态属性是对象所拥有的，在创建对象的时候被初始化，存在多个副本，各个对象拥有的副本互不影响。**
+
+### 接口与抽象类
+
+#### 抽象类
+简单说，拥有抽象方法的类就是抽象类。抽象类是不能实例化的作用：抽象方法实际上相当于定义了“规范”，只能被继承，保证子类实现其定义的抽象方法可用于实现多态。
+例：
+```
+//定义一个抽象类  
+public abstract class Person{
+    //普通方法  
+    public String getName()
+    {
+       return name;
+    }
+    //抽象方法  
+    //没有方法体，用abstract做修饰  
+    public abstract void getMission();
+}
+Person P = new Person(); 
+// 编译错误，抽象类不能实例化
+```
+```
+public class Student extends Person{
+    public void getMission(){
+        System.out.println("为中华之崛起而读书");  
+    }
+ }
+```
+#### 接口
+比抽象类还要抽象：没有字段，所有方法都是抽象方法。
+例：
+```
+interface Person{
+    void getDuty();
+    void getMission();
+}
+```
+实现：
+```
+public class Student implements Person{
+    private String name;
+    private int age;
+    @Override
+    public void getDuty(){
+        System.out.println("好好学习");  
+    }
+    @Override
+    public void getMission(){
+        System.out.println("为中华之崛起而读书");  
+    }
+}
+```
+#### 问答题考点：接口与抽象类的区别
+- 抽象方法上，两者都可以定义抽象方法；
+- 字段上，抽象类可以定义字段，而接口无字段；
+- 继承上，抽象类只能extends一个class，而接口可以implements多个interface。
+
+### Java中多继承问题
+Java原则上只允许单继承，但是其提供了两种方法让我们实现多继承：**内部类和接口。**
+
+#### 内部类实现
+内部类：在类内部不仅可以定义成员变量和方法，还可以定义另一个类。如果在类A的内部再定义一个类B，则B类就称为内部类，而A类则称为外部类。内部类可以实现很好的隐藏，并且拥有外部类的所有元素的访问权限。
+内部类例：
+```
+public class Father{  
+    public int strong(){  
+        // 强壮指数  
+        return 9;  
+    }  
+}
+public class Mother{  
+    public int smart(){  
+        // 聪慧指数  
+        return 8;  
+    }  
+}
+```
+创建son类：
+```
+public class Son {  
+    // 内部类继承Father类  
+    class Father_Inner extends Father {  
+        public int strong() {  
+            return super.strong() + 1;  
+        }  
+    }
+    // 内部类继承Mother类   
+    class Mother_Inner extends Mother {  
+        public int smart() {  
+            return super.smart() + 2;  
+        }  
+    }   
+    public int getStrong() {  
+        return new Father_Inner().strong();
+    }  
+    public int getSmart() {  
+        return new Mother_Inner().smart(); 
+    } 
+}   
+```
+#### 接口实现
+Java中接口可以继承多个接口。
+```
+public interface Father{  
+    public void strong();  
+}  
+  
+public interface Mother{  
+    public void smart();  
+}  
+  
+public interface Daughter extends Father, Mother{  
+    public void kind();  
+}  
+```
+```
+public class Girl implements Daughter{  
+    public static void main(String[] args){
+    }  
+    @Override  
+    public void strong(){  
+        System.out.println(“She’s not strong.");  
+    }  
+    @Override  
+    public void smart(){  
+        System.out.println(“She’s very smart.");  
+    }  
+    @Override  
+    public void kind(){  
+        System.out.println(“She’s very kind.")  
+    }  
+}
+```
+
+## <center>数组与集合
+### 问答题考点：数组与集合的区别
+集合类与数组不同之处是，数组的长度是固定的，集合的长度是可变的；数组用来存放基本类型的数据和对象的引用，集合只能用来存放对象的引用。
+
+### 数组
+略
+
+### 集合
+#### 集合中的接口继承关系
+![集合](./figure/9.png)
+#### List接口
+List接口定义了一个有序的对象集合，允许重复元素存在。ArrayList 类是一个可以动态修改的数组，与普通数组的区别就是它是没有固定大小的限制，我们可以添加或删除元素。
+##### ArrayList的使用
+导入：```import java.util.ArrayList```
+初始化：```ArrayList<E> objectName = new ArrayList<E>();```其中，E为泛型数据类型，只能为引用数据类型。
+基本操作：
+- 增加：.add()，可以指定具体位置
+- 删除：.remove()
+- 修改：.set()，第一个参数为索引位置，第二个参数为要修改的值
+- 访问：.get()
+- 计算大小：.size()
+
+##### LinkedList的使用
+与 ArrayList 相比，LinkedList 的增加和删除的操作效率更高，而查找和修改的操作效率较低。一个单向链表包含两个值: 当前节点的值和一个指向下一个节点的链接。
+导入：```import java.util.LinkedList```
+初始化：```LinkedList<E> objectName = new LinkedList<E>();```其中，E为泛型数据类型，只能为引用数据类型。
+基本操作类似ArratList，只是LinkedList可以直接获取首尾元素。
+
+#### Set接口
+- Set集合中的对象不按特定的方式排序，只是简单地把对象加入集合中，但**Set集合中不能包含重复对象。**
+- Set集合由Set接口和Set接口的实现类组成。Set接口继承了Collection接口，因此包含Collection接口的所有方法。
+导入：```import java.util.HashSet```
+初始化：```HashSet<E> objectName = new HashSet<E>();```其中，E为泛型数据类型，只能为引用数据类型。
+基本操作：
+- 添加元素：.add()
+- 判断元素是否存在:.contains()
+- 删除元素：.remove()
+- 计算元素数量：.size()
+
+#### Map接口
+Map接口提供了将key映射到value的对象。**一个映射不能包含重复的key，每个key最多只能映射到一个value。**
+导入：```import java.util.HashMap```
+初始化：```HashMap<E,T> objectName = new HashMap<E,T>();```HashMap 的 key 与 value 类型可以相同也可以不同，可以是字符串（String）类型的 key 和 value，也可以是整型（Integer）的 key 和字符串（String）类型的value。key不允许直接使用基本数据类型，必须是对象类型（引用类型）。
+基本操作：
+- 添加：.put(key, value)
+- 访问：.get(key)
+- 删除：.remove(key), .clear()
+- 计算大小：.size()
+
 ## <center>设计模式
+面向对象设计原则：
+- 单一职责原则：就一个类而言，应该仅有一个引起它变化的原因。
+- 开闭原则：一个软件实体应当对扩展开放，对修改关闭。
+- 依赖倒转原则：针对接口编程，不要针对实现编程。
 
 ### <center>设计模式的分类
 1. 按照目的来分
@@ -597,3 +818,45 @@ public class Mouse implements MyObserver{
 - 如果存在循环依赖时可能导致系统崩溃
 - 没有相应的机制让观察者知道所观察的目标对象是怎么发生变化的，而只是知道观察目标发生了变化
 
+## <center>Java中的数据流
+### 流的分类
+- 按照流的方向主要分为输入流和输出流两大类。
+- 数据流按照数据单位的不同分为字节流和字符流。
+  - 字节流：基本单位为字节
+  - 字符流：基本单位为字符
+- 按照功能可以划分为节点流和处理流。
+  - 节点流：可以从或向一个特定的地方（节点）读写数据，与数据源直接相连
+  - 处理流：通过一个间接流类去调用节点流类（用来包装节点流），以达到更加灵活方便地读写各种类型的数据
+
+### 输入输出流
+
+#### 字符字节的输入输出（前面已有）
+
+#### 文件的输入输出
+
+##### FileInputStream
+该流用于从文件读取数据，它的对象可以用关键字 new 来创建。
+- 创建方法一：可以使用字符串类型的文件名来创建一个输入流对象来读取文件
+```
+InputStream f = new FileInputStream("C:/java/hello");
+```
+- 创建方法二：使用一个文件对象来创建一个输入流对象来读取文件。
+```
+File f = new File("C:/java/hello");  
+InputStream in = new FileInputStream(f);
+```
+##### FileOutputStream
+该类用来创建一个文件并向文件中写数据。如果该流在打开文件进行输出前，**目标文件不存在，那么该流会创建该文件。**
+- 构造方法一：使用字符串类型的文件名来创建一个输出流对象。
+```
+OutputStream f = new FileOutputStream("C:/java/hello");
+```
+- 构造方法二：使用一个文件对象来创建一个输出流来写文件。
+```
+File f = new File("C:/java/hello");  
+OutputStream fOut = new FileOutputStream(f);
+```
+
+### Java中流继承框架
+Java所有的流类位于java.io包中，都分别继承自以下四种抽象流类型：
+![流](./figure/10.png)
