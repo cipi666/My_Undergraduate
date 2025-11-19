@@ -201,7 +201,7 @@ public static void main(String[] args) {
 }
 ```
 ### 泛型的通配符
-为什么需要通配符：考虑为所有List抽象一个方法，不论给的参数是List<Integer>，List<String>，都可以接收并且打印List中的元素。
+为什么需要通配符：考虑为所有List抽象一个方法，不论给的参数是List<\Integer>，List<\String>，都可以接收并且打印List中的元素。
 ```
 public static void printAllObject(List<Object> list) {
     for (Object object : list) {
@@ -234,6 +234,39 @@ public static void main(String[] args) {
 - \<? extends ClassName>：**类型参数是ClassName的子类。**<? extends T>上界通配符实例化的类必须是T类，或是T类的子类
 - \<? super ClassName>：**类型参数是ClassName的超类。**<? super T>下界通配符实例化的类必须是T类，或是T类的超类
 - \<?>：**无限定通配符。**
+
+例：
+```
+public class WildCardExtendsDemo {
+    public static void printAllObject(ArrayList<? extends Number> list) {
+        for (Object object : list) {
+            System.out.println(object);
+        } 
+    }
+    public static void main(String[] args) {
+        list1.add(1.23);
+        ArrayList<Double> list1 = new ArrayList<>();
+        printAllObject(list1);
+    }   
+}
+```
+```
+public class WildCardSuperDemo {
+    public static void printAllObject(ArrayList<? super Double> list) {
+        for (Object object : list) {
+            System.out.println(object);
+        }  
+    }
+    public static void main(String[] args) {
+        list1.add(7);
+        ArrayList<Number> list1 = new ArrayList<>();
+        printAllObject(list1);
+    } 
+}
+```
+注意：**参数类型T与通配符**
+- T表示一个确定的类型，常用于泛型类和泛型方法的定义
+- ?表示不确定的类型，不是类型变量，通常用于泛型方法的调用代码和形参，不能用于定义类和泛型方法。
 
 ### 反射
 感觉不是很重要，先略。应该会结合单例模式来考察，可以看单例模式。
