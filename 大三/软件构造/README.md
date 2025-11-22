@@ -1368,13 +1368,36 @@ String content = Files.readString(Paths.get("/path/to/file.txt"), StandardCharse
 ```
 但是如果希望将文件当作行序列读入，那么可以调用：
 ```List<String> lines = Files.readAlllines(path, charset);```
-
 如果希望写出一个字符串到文件中，可以调用：
 ```Files.writeString(path, content.chatset);```  
 向指定文件追加内容，可以调用：
 ```Files.write(path, content.getBytes(charset), StandardOpenOption.APPEND);```
 还可以用下面的语句将一个行的集合写出到文件中：
 ```Files.write(path, lines, charset); ```
+
+#### 基本文件操作
+- 创建新目录：```Files.creatDirectory(path); ```
+- 创建空文件：```Files.creatFile(path);```
+- 复制文件：```Files.copy(fromPath, toPath);```
+- 移动文件：```Files.move(fromPath, toPath);```or```Files.copy(fromPath, toPath, standardCopyOption.REPLACE_EXISTING, standardCopyOption.COPY_ATTRIBUTES);```
+- 删除文件：```Files.delete(path);```or```boolean deleted = Files.deleteIfExists(path)```
+- 获取文件信息：下面的静态方法都将返回一个boolean值，表示检查路径的某个属性的结果：
+    - exists()
+    - isHidden()
+    - isReadable(), isWritable(), isExecutate()
+    - isRegularFile(), isDirectory(), isSymbolicLink()
+    - Size()
+#### 对象输入输出与序列化
+当你需要存储相同类型的数据时，使用固定长度的记录格式是一个不错的选择。但是，在面向对象程序中创建的对象很少全部都具有相同的类型。例如，你可能有一个Person记录数组，但是实际上却包含诸如Student这样的子类实例。
+
+Java语言支持一种称为对象序列化(object serialization)的通用机制，它可以将任何对象写出到输出流中，并在之后将其读回。
+- 序列化与反序列化
+    - 把对象转换为字节序列的过程称为对象的序列化(serialize)。
+    - 把字节序列恢复为对象的过程称为对象的反序列化(deserialize)。
+
+用途：
+- 把对象的字节序列永久地保存到硬盘上，通常存放在文件中。
+- 在网络上传送对象的字节序列。
 
 ## Java中的多线程
 
